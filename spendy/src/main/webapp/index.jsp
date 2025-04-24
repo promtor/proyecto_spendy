@@ -161,8 +161,15 @@
 
     <!-- Resumen -->
     <fieldset>
-        <legend>Resumen Gastos/Ingresos</legend>
-        <button onclick="callApi('/api/resumen','GET')">Obtener Resumen</button>
+        <!-- Botón existente que dispara la carga del JSON -->
+        <button id="btnResumen" class="btn btn-info">Resumen gastos/ingresos</button>
+
+        <!-- Nuevo botón para descargar PDF -->
+        <a href="${pageContext.request.contextPath}/exportResumenPdf"
+        class="btn btn-primary">
+        Exportar resumen a PDF
+        </a>
+
     </fieldset>
 
     <!-- Planes de Ahorro -->

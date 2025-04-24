@@ -28,3 +28,4 @@ classes\Categoria.class
 dao\ManagerConfiguracion.class
 dao\ManagerIngresos.class
 classes\Usuario.class
+services\ExportResumenPdfServlet.class
