@@ -1,3 +1,4 @@
+// Archivo: src/main/java/dao/ManagerGastos.java
 package dao;
 
 import classes.Gasto;
@@ -7,9 +8,14 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class ManagerGastos {
     private static final List<Gasto> gastos = new ArrayList<>();
@@ -22,9 +28,13 @@ public class ManagerGastos {
         BigDecimal importe = BigDecimal.valueOf(body.getDouble("importe"));
         Long categoriaId = body.getLong("categoriaId");
         String descripcion = body.getString("descripcion");
-        Double lat = body.optDouble("latitud", 0);
-        Double lon = body.optDouble("longitud", 0);
-        GastoImpl g = new GastoImpl(id, usuarioId, fecha, importe, categoriaId, descripcion, lat, lon);
+        Double latitud = body.optDouble("latitud", 0);
+        Double longitud = body.optDouble("longitud", 0);
+
+        GastoImpl g = new GastoImpl(
+            id, usuarioId, fecha, importe,
+            categoriaId, descripcion, latitud, longitud
+        );
         gastos.add(g);
         return g;
     }
@@ -33,77 +43,49 @@ public class ManagerGastos {
         return new ArrayList<>(gastos);
     }
 
-    /**
-     * Obtiene solo los gastos de un usuario.
-     */
     public static List<Gasto> obtenerGastosPorUsuario(Long usuarioId) {
-        List<Gasto> res = new ArrayList<>();
-        for (Gasto g : gastos) {
-            if (g.getUsuarioId().equals(usuarioId)) {
-                res.add(g);
-            }
-        }
-        return res;
+        return gastos.stream()
+            .filter(g -> g.getUsuarioId().equals(usuarioId))
+            .collect(Collectors.toList());
     }
 
     public static List<Gasto> buscarGastos(String q) {
-        List<Gasto> res = new ArrayList<>();
-        for (Gasto g : gastos) {
-            if (g.getDescripcion().toLowerCase().contains(q.toLowerCase())) res.add(g);
-        }
-        return res;
+        String lower = q.toLowerCase();
+        return gastos.stream()
+            .filter(g -> g.getDescripcion().toLowerCase().contains(lower))
+            .collect(Collectors.toList());
     }
 
-        /**
-     * Filtra gastos según parámetros: desde, hasta, min, max, categoria
-     */
     public static List<Gasto> filtrarGastos(JSONObject filtros) {
-        List<Gasto> res = new ArrayList<>();
-        Date fechaDesde = null, fechaHasta = null;
-        BigDecimal minImporte = null, maxImporte = null;
-        Long catId = null;
-        // Parseo de filtros si están presentes
-        if (filtros.has("desde")) {
-            fechaDesde = Date.valueOf(filtros.getString("desde"));
-        }
-        if (filtros.has("hasta")) {
-            fechaHasta = Date.valueOf(filtros.getString("hasta"));
-        }
-        if (filtros.has("min")) {
-            minImporte = BigDecimal.valueOf(filtros.getDouble("min"));
-        }
-        if (filtros.has("max")) {
-            maxImporte = BigDecimal.valueOf(filtros.getDouble("max"));
-        }
-        if (filtros.has("categoria")) {
-            catId = filtros.getLong("categoria");
-        }
-        // Filtrado
-        for (Gasto g : gastos) {
-            boolean ok = true;
-            if (fechaDesde != null && g.getFecha().before(fechaDesde)) {
-                ok = false;
-            }
-            if (fechaHasta != null && g.getFecha().after(fechaHasta)) {
-                ok = false;
-            }
-            if (minImporte != null && g.getImporte().compareTo(minImporte) < 0) {
-                ok = false;
-            }
-            if (maxImporte != null && g.getImporte().compareTo(maxImporte) > 0) {
-                ok = false;
-            }
-            if (catId != null && !g.getCategoriaId().equals(catId)) {
-                ok = false;
-            }
-            if (ok) {
-                res.add(g);
-            }
-        }
-        return res;
-    }public static JSONObject datosGraficoMensual() {
-        // TODO: agrupa por mes
-        return new JSONObject();
+        Date desde = filtros.has("desde") ? Date.valueOf(filtros.getString("desde")) : null;
+        Date hasta = filtros.has("hasta") ? Date.valueOf(filtros.getString("hasta")) : null;
+        BigDecimal min = filtros.has("min") ? BigDecimal.valueOf(filtros.getDouble("min")) : null;
+        BigDecimal max = filtros.has("max") ? BigDecimal.valueOf(filtros.getDouble("max")) : null;
+        Long cat = filtros.has("categoria") ? filtros.getLong("categoria") : null;
+
+        return gastos.stream().filter(g -> {
+            if (desde != null && g.getFecha().before(desde)) return false;
+            if (hasta != null && g.getFecha().after(hasta)) return false;
+            if (min != null && g.getImporte().compareTo(min) < 0) return false;
+            if (max != null && g.getImporte().compareTo(max) > 0) return false;
+            if (cat != null && !g.getCategoriaId().equals(cat)) return false;
+            return true;
+        }).collect(Collectors.toList());
+    }
+
+    public static JSONObject datosGraficoMensual(Long usuarioId) {
+        List<Gasto> lista = obtenerGastosPorUsuario(usuarioId);
+        Map<String, BigDecimal> acc = lista.stream()
+            .collect(Collectors.groupingBy(
+                g -> ((Date)g.getFecha()).toLocalDate()
+                         .format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                TreeMap::new,
+                Collectors.reducing(BigDecimal.ZERO, Gasto::getImporte, BigDecimal::add)
+            ));
+
+        JSONObject out = new JSONObject();
+        acc.forEach(out::put);
+        return out;
     }
 
     public static JSONArray obtenerUbicaciones() {
