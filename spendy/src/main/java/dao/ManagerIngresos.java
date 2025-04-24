@@ -29,4 +29,17 @@ public class ManagerIngresos {
     public static List<Ingreso> obtenerIngresos() {
         return new ArrayList<>(ingresos);
     }
+
+    /**
+     * Obtiene solo los ingresos de un usuario.
+     */
+    public static List<Ingreso> obtenerIngresosPorUsuario(Long usuarioId) {
+        List<Ingreso> res = new ArrayList<>();
+        for (Ingreso i : ingresos) {
+            if (i.getUsuarioId().equals(usuarioId)) {
+                res.add(i);
+            }
+        }
+        return res;
+    }
 }

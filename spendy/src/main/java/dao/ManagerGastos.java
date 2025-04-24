@@ -33,6 +33,19 @@ public class ManagerGastos {
         return new ArrayList<>(gastos);
     }
 
+    /**
+     * Obtiene solo los gastos de un usuario.
+     */
+    public static List<Gasto> obtenerGastosPorUsuario(Long usuarioId) {
+        List<Gasto> res = new ArrayList<>();
+        for (Gasto g : gastos) {
+            if (g.getUsuarioId().equals(usuarioId)) {
+                res.add(g);
+            }
+        }
+        return res;
+    }
+
     public static List<Gasto> buscarGastos(String q) {
         List<Gasto> res = new ArrayList<>();
         for (Gasto g : gastos) {

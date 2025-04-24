@@ -17,7 +17,7 @@ public class LoginServlet extends HttpServlet {
         JSONObject body = new JSONObject(req.getReader().lines().reduce("", String::concat));
         String token = ManagerUsuarios.login(
             body.getString("correo"),
-            body.getString("passwordHash")
+            body.getString("password")
         );
         JSONObject out = new JSONObject();
         if (token != null) {

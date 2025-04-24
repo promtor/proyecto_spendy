@@ -6,26 +6,41 @@
     <meta charset="UTF-8">
     <title>Spendy Backend - Pruebas</title>
     <script>
-        // Obtenemos dinámicamente el context path (por ejemplo "/spendy")
         const contextPath = '<%= request.getContextPath() %>';
-
+        // Variable global para guardar el token
+        let authToken = null;
+      
         async function callApi(path, method, payload) {
-            try {
-                // Si path empieza por /api, le anteponemos el contextPath
-                const url = path.startsWith('/api') ? contextPath + path : path;
-                const options = { method };
-                if (payload) {
-                    options.headers = { 'Content-Type': 'application/json' };
-                    options.body = JSON.stringify(payload);
-                }
-                const res = await fetch(url, options);
-                const text = await res.text();
-                document.getElementById('resultado').textContent = text;
-            } catch (err) {
-                document.getElementById('resultado').textContent = 'Error: ' + err;
+          try {
+            const url = path.startsWith('/api') ? contextPath + path : path;
+            const options = { method, headers: {} };
+      
+            // Si tenemos token, lo enviamos en el header
+            if (authToken) {
+              options.headers['Authorization'] = 'Bearer ' + authToken;
             }
+      
+            if (payload) {
+              options.headers['Content-Type'] = 'application/json';
+              options.body = JSON.stringify(payload);
+            }
+      
+            const res = await fetch(url, options);
+            const text = await res.text();
+            document.getElementById('resultado').textContent = text;
+      
+            // Si es login y responde con token, lo guardamos
+            if (path === '/api/login' && res.ok) {
+              const json = JSON.parse(text);
+              authToken = json.token;
+              document.getElementById('resultado').textContent += '\n\nToken guardado.';
+            }
+          } catch (err) {
+            document.getElementById('resultado').textContent = 'Error: ' + err;
+          }
         }
-    </script>
+      </script>
+      
 </head>
 
 <body>
