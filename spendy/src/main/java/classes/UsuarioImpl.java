@@ -1,68 +1,85 @@
 package classes;
 
+import java.math.BigDecimal;
+
 public class UsuarioImpl implements Usuario {
-	
-	private String nombre, apellidos, correoElectronico, contrasenya;
+    private Long id;
+    private String nombre;
+    private String correo;
+    private String passwordHash;
+    private String tema;
+    private BigDecimal limiteMensual;
 
-	public UsuarioImpl(String nombre, String apellidos, String correoElectronico, String contrasenya) {
-		super();
-		this.nombre = nombre;
-		this.apellidos = apellidos;
-		this.correoElectronico = correoElectronico;
-		this.contrasenya = contrasenya;
-	}
-	
+    public UsuarioImpl() {
+    }
 
-	// ----------------------------- Metodos Get y Set -----------------------------------------//
-	public String getNombre() {
-		return nombre;
-	}
+    public UsuarioImpl(Long id, String nombre, String correo, String passwordHash,
+            String tema, BigDecimal limiteMensual) {
+        this.id = id;
+        this.nombre = nombre;
+        this.correo = correo;
+        this.passwordHash = passwordHash;
+        this.tema = tema;
+        this.limiteMensual = limiteMensual;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-		
-	}
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-	public String getApellidos() {
-		return apellidos;
-	}
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setApellidos(String apellidos) {
-		this.apellidos = apellidos;
-		
-	}
+    @Override
+    public String getNombre() {
+        return nombre;
+    }
 
-	public String getCorreoElectronico() {
-		return correoElectronico;
-	}
+    @Override
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setCorreoElectronico(String correoElectronico) {
-		this.correoElectronico = correoElectronico;
-		
-	}
+    @Override
+    public String getCorreo() {
+        return correo;
+    }
 
-	public String getContrasenya() {
-		return contrasenya;
-	}
+    @Override
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
 
-	public void setContrasenya(String contrasenya) {
-		this.contrasenya = contrasenya;
-	}
+    @Override
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
-	// ----------------------------- Metodos Auxiliares -----------------------------------------//
-	/*
-	@Override
-	public String toString() {
-		
-	}
+    @Override
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
-	@Override
-	public int hashCode() {
-		
-	}
+    @Override
+    public String getTema() {
+        return tema;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
+    @Override
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
 
-	}*/
+    @Override
+    public BigDecimal getLimiteMensual() {
+        return limiteMensual;
+    }
+
+    @Override
+    public void setLimiteMensual(BigDecimal limiteMensual) {
+        this.limiteMensual = limiteMensual;
+    }
 }

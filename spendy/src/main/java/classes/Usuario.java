@@ -1,21 +1,29 @@
 package classes;
 
+import java.math.BigDecimal;
+
 public interface Usuario {
+    Long getId();
 
-	String getNombre();
+    void setId(Long id);
 
-	void setNombre(String nombre);
+    String getNombre();
 
-	String getApellidos();
+    void setNombre(String nombre);
 
-	void setApellidos(String apellidos);
+    String getCorreo();
 
-	String getCorreoElectronico();
+    void setCorreo(String correo);
 
-	void setCorreoElectronico(String correoElectronico);
+    String getPasswordHash();
 
-	String getContrasenya();
+    void setPasswordHash(String passwordHash);
 
-	void setContrasenya(String contrasenya);
+    String getTema();
 
+    void setTema(String tema);
+
+    BigDecimal getLimiteMensual();
+
+    void setLimiteMensual(BigDecimal limiteMensual);
 }
