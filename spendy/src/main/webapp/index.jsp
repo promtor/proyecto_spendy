@@ -161,13 +161,16 @@
 
     <!-- Resumen -->
     <fieldset>
+
         <legend>Resumen Gastos/Ingresos</legend>
         <button onclick="callApi('/api/resumen','GET')">Obtener Resumen</button>
+       
     </fieldset>
 
     <!-- Planes de Ahorro -->
     <fieldset>
         <legend>Planes de Ahorro</legend>
+
         <button onclick="callApi('/api/planes','GET')">Ver Sugerencias</button>
     </fieldset>
 
