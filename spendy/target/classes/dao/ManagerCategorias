@@ -1,0 +1,25 @@
+package dao;
+
+import classes.Categoria;
+import classes.CategoriaImpl;
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class ManagerCategorias {
+    private static final List<Categoria> categorias = new ArrayList<>();
+    private static final AtomicLong seqId = new AtomicLong(1);
+
+    public static Categoria crearCategoria(JSONObject body) {
+        Long usuarioId = body.getLong("usuarioId");
+        String nombre = body.getString("nombre");
+        CategoriaImpl c = new CategoriaImpl(seqId.getAndIncrement(), usuarioId, nombre);
+        categorias.add(c);
+        return c;
+    }
+
+    public static List<Categoria> obtenerCategorias() {
+        return new ArrayList<>(categorias);
+    }
+}
